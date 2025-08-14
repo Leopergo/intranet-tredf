@@ -41,7 +41,7 @@ Disallow: /*edit</value>
       <element>Reviewer</element>
     </value>
     <value key="site_favicon_mimetype">image/vnd.microsoft.icon</value>
-    <value key="site_title">Intranet  do TRE-DF</value>
+    <value key="site_title">Intranet do TRE-DF</value>
     <value key="thumb_scale_listing">thumb</value>
     <value key="thumb_scale_portlet">icon</value>
     <value key="thumb_scale_summary">mini</value>
