@@ -50,9 +50,9 @@ class TestArea:
             "plone.namefromtitle",
             "plone.shortname",
             "plone.excludefromnavigation",
-            "plone.versioning",
             "tredf.intranet.behavior.contato",
             "tredf.intranet.behavior.endereco",
+            "plone.versioning",
             "volto.blocks",
             "plone.constraintypes",
             "volto.preview_image",
@@ -99,4 +99,19 @@ class TestArea:
             payload = deepcopy(area_payload)
             payload["description"] = ""
             area = api.content.create(container=container, **payload)
+        assert area.exclude_from_nav is True
+
+    def test_subscriber_modified(self, area_payload):
+        from zope.event import notify
+        from zope.lifecycleevent import ObjectModifiedEvent
+
+        container = self.portal
+        with api.env.adopt_roles(["Manager"]):
+            area = api.content.create(container=container, **area_payload)
+        assert area.exclude_from_nav is False
+        # Agora modificamos a descrição para uma string vazia
+        area.description = ""
+        # Disparamos o evento de modificação do objeto
+        notify(ObjectModifiedEvent(area))
+        # E verificamos que exclude_from_nav foi atualizado
         assert area.exclude_from_nav is True
