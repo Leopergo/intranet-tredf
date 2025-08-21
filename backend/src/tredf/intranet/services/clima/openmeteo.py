@@ -52,7 +52,9 @@ def _formatar_resposta(data: dict) -> dict:
     sunset = dados_diarios["sunset"]
     horarios = dados_hora["time"]
     sequencia = dados_hora["temperature_2m"]
-    temperaturas = {formata_hora(hora): temp for hora, temp in zip(horarios, sequencia)}
+    temperaturas = {
+        formata_hora(hora): temp for hora, temp in zip(horarios, sequencia, strict=True)
+    }
     temperatura = dados_agora["temperature_2m"]
     weather_code = dados_agora["weather_code"]
     return {
@@ -65,9 +67,8 @@ def _formatar_resposta(data: dict) -> dict:
     }
 
 
-@cache(time_30m_key)
-def dados_clima(latitude: str, longitude: str, timezone: str) -> dict:
-    """Chama o serviço Open Meteo e retorna os dados de clima."""
+def _dados_clima(latitude: str, longitude: str, timezone: str) -> dict:
+    """Função que chama o serviço Open Meteo e retorna os dados de clima."""
     # Parametros da chamada
     params = {
         "latitude": latitude,
@@ -80,7 +81,13 @@ def dados_clima(latitude: str, longitude: str, timezone: str) -> dict:
     }
     # Realiza a requisição
     logger.info("Acesso ao OpenMeteo")
-    response = requests.get(BASE_URL, params=params)
+    response = requests.get(BASE_URL, params=params, timeout=5)
     logger.info("Parseia dados recebidos")
     data = _formatar_resposta(response.json())
     return data
+
+
+@cache(time_30m_key)
+def dados_clima(latitude: str, longitude: str, timezone: str) -> dict:
+    """Chama o serviço Open Meteo e retorna os dados de clima."""
+    return _dados_clima(latitude, longitude, timezone)
